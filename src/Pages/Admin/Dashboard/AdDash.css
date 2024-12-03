@@ -1,0 +1,74 @@
+.ad-flex {
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+}
+
+.ad-card {
+  background: #ffffff;
+  width: 100%;
+  height: auto;
+  border-radius: 16px;
+  padding: 42px 32px 42px 32px;
+  box-shadow: rgba(0, 0, 0, 0.25) 0px 5px 15px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  font-size: 24px;
+  line-height: 130%;
+  color: #000;
+  font-weight: 500;
+  transition: 0.5s ease-in-out;
+  cursor: pointer;
+}
+
+.ad-card:hover {
+  background: #1977d1;
+  color: #ffffff;
+  transition: 0.5s ease-in-out;
+}
+
+.faculty-summary {
+  margin-top: 20px;
+}
+
+.faculty-section {
+  border: 1px solid #ccc;
+  padding: 15px;
+  margin-bottom: 20px;
+  background-color: #f9f9f9;
+}
+
+.faculty-title {
+  font-size: 1.5rem;
+  color: #333;
+}
+
+.department-section {
+  margin-top: 10px;
+}
+
+.department-title {
+  font-size: 1.2rem;
+  font-weight: bold;
+  margin-top: 10px;
+}
+
+.clearance-summary {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 10px;
+}
+
+.clearance-summary div {
+  width: 45%;
+  background: #eef;
+  padding: 10px;
+  border-radius: 5px;
+}
+
+h5 {
+  margin-bottom: 5px;
+}

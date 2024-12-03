@@ -1,0 +1,134 @@
+.ad-searchs {
+  padding: 20px;
+  background-color: #f9f9f9;
+}
+
+.student-name {
+  font-size: 18px;
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
+.search-welcome {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: white;
+  padding: 15px;
+  border-radius: 5px;
+  margin-bottom: 15px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.welcome-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.student-level {
+  font-size: 14px;
+  color: gray;
+}
+
+.search-col {
+  display: flex;
+  gap: 10px;
+}
+
+.search-view {
+  padding: 8px 15px;
+  font-size: 14px;
+  cursor: pointer;
+  border-radius: 5px;
+  background-color: #4caf50;
+  color: white;
+  transition: background-color 0.3s;
+}
+
+.search-view:hover {
+  background-color: #45a049;
+}
+
+.clearance-requests {
+  margin-top: 20px;
+}
+
+.clearance-card {
+  background-color: #ffffff;
+  border-radius: 5px;
+  padding: 15px;
+  margin-bottom: 10px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.clearance-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.status {
+  padding: 5px 10px;
+  border-radius: 3px;
+  font-size: 14px;
+}
+
+.status.pending {
+  background-color: #ff9800;
+  color: white;
+}
+
+.status.accepted {
+  background-color: #4caf50;
+  color: white;
+}
+
+.status.denied {
+  background-color: #f44336;
+  color: white;
+}
+
+.receipt-view {
+  margin-top: 10px;
+}
+
+.receipt-img {
+  max-width: 200px;
+  max-height: 200px;
+  object-fit: contain;
+  border-radius: 5px;
+  border: 1px solid #ddd;
+}
+
+.clearance-actions {
+  margin-top: 15px;
+  display: flex;
+  gap: 10px;
+}
+
+.accept-btn,
+.deny-btn {
+  padding: 8px 15px;
+  font-size: 14px;
+  cursor: pointer;
+  border-radius: 5px;
+  transition: background-color 0.3s;
+}
+
+.accept-btn {
+  background-color: #008cba;
+  color: white;
+}
+
+.accept-btn:hover {
+  background-color: #007b8f;
+}
+
+.deny-btn {
+  background-color: #f44336;
+  color: white;
+}
+
+.deny-btn:hover {
+  background-color: #da190b;
+}
