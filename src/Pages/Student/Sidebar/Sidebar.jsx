@@ -2,9 +2,7 @@ import './Sidebar.css';
 import Logo from '../../../images/logo.jpg';
 import DashboardIcon from '../../../assets/dashboard';
 import ProfileIcon from '../../../assets/profile';
-import SettingsIcon from '../../../assets/settings';
 import { Link, useNavigate } from 'react-router-dom';
-
 import Clear from '../../../assets/Clear';
 
 // eslint-disable-next-line react/prop-types
@@ -49,14 +47,6 @@ const Sidebar = ({ state }) => {
           >
             <ProfileIcon />
             Profile
-          </Link>
-
-          <Link
-            to='/student/settings'
-            className={`${state === 4 ? 'side-flex active' : 'side-flex'}`}
-          >
-            <SettingsIcon />
-            Settings
           </Link>
         </div>
 

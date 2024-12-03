@@ -8,22 +8,20 @@ const Dashboard = () => {
   const [libraryClearances, setLibraryClearances] = useState([]);
 
   useEffect(() => {
-    // Fetch user and clearance data from localStorage or mock data
+    // Fetch user and clearance data from localStorage
     const loggedInUser = JSON.parse(localStorage.getItem('loggedInUser'));
     const bursaryRequests =
       JSON.parse(localStorage.getItem('bursaryClearanceRequests')) || [];
     const libraryRequests =
       JSON.parse(localStorage.getItem('libraryClearanceRequests')) || [];
 
-    console.log(bursaryRequests, libraryRequests);
-
     // Filter clearances related to the logged-in user
     const userBursaryClearances = bursaryRequests.filter(
-      (request) => request.matricNumber === loggedInUser.matricNumber
+      (request) => request.matricNumber === loggedInUser?.matricNumber
     );
 
     const userLibraryClearances = libraryRequests.filter(
-      (request) => request.matricNumber === loggedInUser.matricNumber
+      (request) => request.matricNumber === loggedInUser?.matricNumber
     );
 
     setUser(loggedInUser);
@@ -31,12 +29,17 @@ const Dashboard = () => {
     setLibraryClearances(userLibraryClearances);
   }, []);
 
+  // Check if all clearances are "Accepted"
   const allCleared =
+    bursaryClearances.length > 0 &&
+    libraryClearances.length > 0 &&
     bursaryClearances.every((clearance) => clearance.status === 'Accepted') &&
     libraryClearances.every((clearance) => clearance.status === 'Accepted');
 
   const handlePrint = () => {
-    window.print();
+    if (allCleared) {
+      window.print();
+    }
   };
 
   return (
@@ -48,8 +51,7 @@ const Dashboard = () => {
               <p className='student-name'>{user.name}</p>
               <p className='student-level'>{user.matricNumber}</p>
             </div>
-
-            <div className='welcome-state'>
+            <div style={{ textAlign: 'center' }} className='welcome-state'>
               {allCleared ? 'All Clearances Completed' : 'Pending Clearances'}
             </div>
           </div>
@@ -59,9 +61,8 @@ const Dashboard = () => {
 
         <div className='medical-record'>
           <p className='pers-header'>Bursary Clearance Status</p>
-
           <div className='medical-table'>
-            <div className='medical-head'>
+            <div style={{ textAlign: 'center' }} className='medical-head'>
               <p className='med-head'>Clearance Type</p>
               <p className='med-head'>Receipt Numbers</p>
               <p className='med-head'>Status</p>
@@ -72,8 +73,8 @@ const Dashboard = () => {
                 <div key={index} className='medical-head'>
                   <p className='med-text'>{clearance.clearanceType}</p>
                   <p className='med-text'>
-                    {Array.isArray(clearance.receiptNumbers)
-                      ? clearance.receiptNumbers.join(', ')
+                    {clearance.receiptNumbers
+                      ? Object.values(clearance.receiptNumbers).join(', ')
                       : 'N/A'}
                   </p>
                   <p
@@ -93,9 +94,8 @@ const Dashboard = () => {
           </div>
 
           <p className='pers-header'>Library Clearance Status</p>
-
           <div className='medical-table'>
-            <div className='medical-head'>
+            <div style={{ textAlign: 'center' }} className='medical-head'>
               <p className='med-head'>Clearance Type</p>
               <p className='med-head'>Receipt Number</p>
               <p className='med-head'>Status</p>
@@ -122,13 +122,15 @@ const Dashboard = () => {
             )}
           </div>
 
-          {allCleared && (
-            <div className='print-button-container'>
-              <button className='print-btn' onClick={handlePrint}>
-                Print Clearance Form
-              </button>
-            </div>
-          )}
+          <div className='print-button-container'>
+            <button
+              className='print-btn'
+              onClick={handlePrint}
+              disabled={!allCleared}
+            >
+              Print Clearance Form
+            </button>
+          </div>
         </div>
       </div>
     </DashboardLayout>
