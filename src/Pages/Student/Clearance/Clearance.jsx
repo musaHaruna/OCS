@@ -3,6 +3,9 @@ import { useState } from 'react';
 import './Clearance.css';
 import BursaryClearance from './BursaryClearance';
 import LibraryClearance from './LibraryClearance';
+import SportsClearance from './SportClearance';
+import DepartmentClearance from './DepartmentClearance';
+import CemetClearance from './CemetClearance';
 
 const Clearance = () => {
   const [menu, setMenu] = useState(0);
@@ -25,6 +28,33 @@ const Clearance = () => {
       case 1:
         return (
           <BursaryClearance
+            location={location}
+            setLocation={setLocation}
+            handleSendRequest={handleSendRequest}
+            requestSent={requestSent}
+          />
+        );
+      case 2:
+        return (
+          <SportsClearance
+            location={location}
+            setLocation={setLocation}
+            handleSendRequest={handleSendRequest}
+            requestSent={requestSent}
+          />
+        );
+      case 3:
+        return (
+          <DepartmentClearance
+            location={location}
+            setLocation={setLocation}
+            handleSendRequest={handleSendRequest}
+            requestSent={requestSent}
+          />
+        );
+      case 4:
+        return (
+          <CemetClearance
             location={location}
             setLocation={setLocation}
             handleSendRequest={handleSendRequest}
@@ -63,6 +93,21 @@ const Clearance = () => {
             <div className='first'>
               <div onClick={() => setMenu(1)} className='amb-card'>
                 Bursary
+              </div>
+            </div>
+            <div className='first'>
+              <div onClick={() => setMenu(2)} className='amb-card'>
+                Sports
+              </div>
+            </div>
+            <div className='first'>
+              <div onClick={() => setMenu(3)} className='amb-card'>
+                Department
+              </div>
+            </div>
+            <div className='first'>
+              <div onClick={() => setMenu(4)} className='amb-card'>
+                CEMET
               </div>
             </div>
             <div className='first'>

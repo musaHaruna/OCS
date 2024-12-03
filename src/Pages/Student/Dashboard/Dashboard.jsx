@@ -6,35 +6,80 @@ const Dashboard = () => {
   const [user, setUser] = useState(null);
   const [bursaryClearances, setBursaryClearances] = useState([]);
   const [libraryClearances, setLibraryClearances] = useState([]);
+  const [sportsClearances, setSportsClearances] = useState([]);
+  const [departmentClearances, setDepartmentClearances] = useState([]);
+  const [cemetClearances, setCemetClearances] = useState([]);
 
   useEffect(() => {
-    // Fetch user and clearance data from localStorage
     const loggedInUser = JSON.parse(localStorage.getItem('loggedInUser'));
+
     const bursaryRequests =
       JSON.parse(localStorage.getItem('bursaryClearanceRequests')) || [];
     const libraryRequests =
       JSON.parse(localStorage.getItem('libraryClearanceRequests')) || [];
+    const sportsRequests =
+      JSON.parse(localStorage.getItem('sportsClearanceRequests')) || [];
+    const departmentRequests =
+      JSON.parse(localStorage.getItem('departmentClearanceRequests')) || [];
+    const cemetRequests =
+      JSON.parse(localStorage.getItem('cemetClearanceRequests')) || [];
 
-    // Filter clearances related to the logged-in user
-    const userBursaryClearances = bursaryRequests.filter(
-      (request) => request.matricNumber === loggedInUser?.matricNumber
-    );
-
-    const userLibraryClearances = libraryRequests.filter(
-      (request) => request.matricNumber === loggedInUser?.matricNumber
-    );
+    const filterRequests = (requests) =>
+      requests.filter(
+        (request) => request.matricNumber === loggedInUser?.matricNumber
+      );
 
     setUser(loggedInUser);
-    setBursaryClearances(userBursaryClearances);
-    setLibraryClearances(userLibraryClearances);
+    setBursaryClearances(filterRequests(bursaryRequests));
+    setLibraryClearances(filterRequests(libraryRequests));
+    setSportsClearances(filterRequests(sportsRequests));
+    setDepartmentClearances(filterRequests(departmentRequests));
+    setCemetClearances(filterRequests(cemetRequests));
   }, []);
 
-  // Check if all clearances are "Accepted"
   const allCleared =
-    bursaryClearances.length > 0 &&
-    libraryClearances.length > 0 &&
-    bursaryClearances.every((clearance) => clearance.status === 'Accepted') &&
-    libraryClearances.every((clearance) => clearance.status === 'Accepted');
+    bursaryClearances.every((c) => c.status === 'Accepted') &&
+    libraryClearances.every((c) => c.status === 'Accepted') &&
+    sportsClearances.every((c) => c.status === 'Accepted') &&
+    departmentClearances.every((c) => c.status === 'Accepted') &&
+    cemetClearances.every((c) => c.status === 'Accepted');
+
+  const renderClearanceSection = (title, clearances) => (
+    <div>
+      <p className='pers-header'>{title} Clearance Status</p>
+      <div className='medical-table'>
+        <div style={{ textAlign: 'center' }} className='medical-head'>
+          <p className='med-head'>Clearance Type</p>
+          <p className='med-head'>Receipt Numbers</p>
+          <p className='med-head'>Status</p>
+        </div>
+
+        {clearances.length > 0 ? (
+          clearances.map((clearance, index) => (
+            <div key={index} className='medical-head'>
+              <p className='med-text'>{clearance.clearanceType}</p>
+              <p className='med-text'>
+                {title === 'Bursary'
+                  ? Object.entries(clearance.receiptNumbers || {})
+                      .map(([level, receipt]) => `${level}: ${receipt}`)
+                      .join(', ')
+                  : clearance.receiptNumber || 'N/A'}
+              </p>
+              <p
+                className={`med-text ${
+                  clearance.status === 'Accepted' ? 'med-active' : 'med-pending'
+                }`}
+              >
+                {clearance.status}
+              </p>
+            </div>
+          ))
+        ) : (
+          <p>No {title.toLowerCase()} clearance data found.</p>
+        )}
+      </div>
+    </div>
+  );
 
   const handlePrint = () => {
     if (allCleared) {
@@ -59,78 +104,20 @@ const Dashboard = () => {
           <p>Loading user data...</p>
         )}
 
-        <div className='medical-record'>
-          <p className='pers-header'>Bursary Clearance Status</p>
-          <div className='medical-table'>
-            <div style={{ textAlign: 'center' }} className='medical-head'>
-              <p className='med-head'>Clearance Type</p>
-              <p className='med-head'>Receipt Numbers</p>
-              <p className='med-head'>Status</p>
-            </div>
+        {renderClearanceSection('Bursary', bursaryClearances)}
+        {renderClearanceSection('Library', libraryClearances)}
+        {renderClearanceSection('Sports', sportsClearances)}
+        {renderClearanceSection('Department', departmentClearances)}
+        {renderClearanceSection('CEMET', cemetClearances)}
 
-            {bursaryClearances.length > 0 ? (
-              bursaryClearances.map((clearance, index) => (
-                <div key={index} className='medical-head'>
-                  <p className='med-text'>{clearance.clearanceType}</p>
-                  <p className='med-text'>
-                    {clearance.receiptNumbers
-                      ? Object.values(clearance.receiptNumbers).join(', ')
-                      : 'N/A'}
-                  </p>
-                  <p
-                    className={`med-text ${
-                      clearance.status === 'Accepted'
-                        ? 'med-active'
-                        : 'med-pending'
-                    }`}
-                  >
-                    {clearance.status}
-                  </p>
-                </div>
-              ))
-            ) : (
-              <p>No bursary clearance data found.</p>
-            )}
-          </div>
-
-          <p className='pers-header'>Library Clearance Status</p>
-          <div className='medical-table'>
-            <div style={{ textAlign: 'center' }} className='medical-head'>
-              <p className='med-head'>Clearance Type</p>
-              <p className='med-head'>Receipt Number</p>
-              <p className='med-head'>Status</p>
-            </div>
-
-            {libraryClearances.length > 0 ? (
-              libraryClearances.map((clearance, index) => (
-                <div key={index} className='medical-head'>
-                  <p className='med-text'>{clearance.clearanceType}</p>
-                  <p className='med-text'>{clearance.receiptNumber || 'N/A'}</p>
-                  <p
-                    className={`med-text ${
-                      clearance.status === 'Accepted'
-                        ? 'med-active'
-                        : 'med-pending'
-                    }`}
-                  >
-                    {clearance.status}
-                  </p>
-                </div>
-              ))
-            ) : (
-              <p>No library clearance data found.</p>
-            )}
-          </div>
-
-          <div className='print-button-container'>
-            <button
-              className='print-btn'
-              onClick={handlePrint}
-              disabled={!allCleared}
-            >
-              Print Clearance Form
-            </button>
-          </div>
+        <div className='print-button-container'>
+          <button
+            className='print-btn'
+            onClick={handlePrint}
+            disabled={!allCleared}
+          >
+            Print Clearance Form
+          </button>
         </div>
       </div>
     </DashboardLayout>

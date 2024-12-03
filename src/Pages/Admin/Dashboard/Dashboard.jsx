@@ -6,20 +6,26 @@ import { useNavigate } from 'react-router-dom';
 const AdDashboard = () => {
   const navigate = useNavigate();
   const [studentsData, setStudentsData] = useState([]);
-  const [bursaryRequests, setBursaryRequests] = useState([]);
-  const [libraryRequests, setLibraryRequests] = useState([]);
+  const [clearanceRequests, setClearanceRequests] = useState([]);
 
   useEffect(() => {
     // Fetch students and clearance requests from localStorage
     const storedStudents = JSON.parse(localStorage.getItem('students')) || [];
-    const storedBursary =
-      JSON.parse(localStorage.getItem('bursaryClearanceRequests')) || [];
-    const storedLibrary =
-      JSON.parse(localStorage.getItem('libraryClearanceRequests')) || [];
+    const clearanceTypes = [
+      'bursaryClearanceRequests',
+      'libraryClearanceRequests',
+      'sportsClearanceRequests',
+      'departmentClearanceRequests',
+      'cemetClearanceRequests',
+    ];
+
+    const allClearanceRequests = clearanceTypes.reduce((acc, type) => {
+      const requests = JSON.parse(localStorage.getItem(type)) || [];
+      return [...acc, ...requests];
+    }, []);
 
     setStudentsData(storedStudents);
-    setBursaryRequests(storedBursary);
-    setLibraryRequests(storedLibrary);
+    setClearanceRequests(allClearanceRequests);
   }, []);
 
   // Helper function to group data by faculty and department
@@ -59,6 +65,14 @@ const AdDashboard = () => {
     0
   );
 
+  const clearanceTypes = [
+    'Bursary',
+    'Library',
+    'Sports',
+    'Department',
+    'CEMET',
+  ];
+
   return (
     <AdDashboardLayout state={1}>
       <div className='ad-flex'>
@@ -90,41 +104,33 @@ const AdDashboard = () => {
           {Object.entries(groupedStudents).map(([faculty, departments]) => (
             <div key={faculty} className='faculty-section'>
               <h3 className='faculty-title'>{faculty}</h3>
-              {Object.entries(departments).map(([department, students]) => {
-                const bursaryStatus = calculateClearanceStatus(
-                  bursaryRequests.filter(
-                    (req) =>
-                      req.department === department && req.faculty === faculty
-                  )
-                );
-                const libraryStatus = calculateClearanceStatus(
-                  libraryRequests.filter(
-                    (req) =>
-                      req.department === department && req.faculty === faculty
-                  )
-                );
+              {Object.entries(departments).map(([department, students]) => (
+                <div key={department} className='department-section'>
+                  <h4 className='department-title'>{department}</h4>
+                  <p>Total Students: {students.length}</p>
 
-                return (
-                  <div key={department} className='department-section'>
-                    <h4 className='department-title'>{department}</h4>
-                    <p>Total Students: {students.length}</p>
-                    <div className='clearance-summary'>
-                      <div>
-                        <h5>Bursary Clearance</h5>
-                        <p>Total Requests: {bursaryStatus.total}</p>
-                        <p>Pending: {bursaryStatus.pending}</p>
-                        <p>Completed: {bursaryStatus.completed}</p>
-                      </div>
-                      <div>
-                        <h5>Library Clearance</h5>
-                        <p>Total Requests: {libraryStatus.total}</p>
-                        <p>Pending: {libraryStatus.pending}</p>
-                        <p>Completed: {libraryStatus.completed}</p>
-                      </div>
-                    </div>
+                  <div className='clearance-summary'>
+                    {clearanceTypes.map((type) => {
+                      const status = calculateClearanceStatus(
+                        clearanceRequests.filter(
+                          (req) =>
+                            req.department === department &&
+                            req.faculty === faculty &&
+                            req.clearanceType === type
+                        )
+                      );
+                      return (
+                        <div key={type}>
+                          <h5>{type} Clearance</h5>
+                          <p>Total Requests: {status.total}</p>
+                          <p>Pending: {status.pending}</p>
+                          <p>Completed: {status.completed}</p>
+                        </div>
+                      );
+                    })}
                   </div>
-                );
-              })}
+                </div>
+              ))}
             </div>
           ))}
         </div>

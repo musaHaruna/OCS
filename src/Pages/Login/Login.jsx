@@ -20,9 +20,6 @@ const Login = () => {
             <AdminIcon />
             Admin
           </Link>
-          <a href='Proreg.html' className='reg'>
-            Register
-          </a>
         </div>
       </div>
     </div>

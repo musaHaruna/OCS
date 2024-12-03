@@ -1,21 +1,32 @@
 import { useState, useEffect } from 'react';
 import AdDashboardLayout from '../DashLayout/DashboardLayout';
 import { useNavigate } from 'react-router-dom';
-import './Request.css'; // Ensure this file contains relevant styling
+import './Request.css';
 
 const Request = () => {
   const navigate = useNavigate();
   const [groupedRequests, setGroupedRequests] = useState([]);
 
-  // Fetch and group clearance requests by matricNumber
   useEffect(() => {
     const bursaryRequests =
       JSON.parse(localStorage.getItem('bursaryClearanceRequests')) || [];
     const libraryRequests =
       JSON.parse(localStorage.getItem('libraryClearanceRequests')) || [];
+    const sportsRequests =
+      JSON.parse(localStorage.getItem('sportsClearanceRequests')) || [];
+    const departmentRequests =
+      JSON.parse(localStorage.getItem('departmentClearanceRequests')) || [];
+    const cemetRequests =
+      JSON.parse(localStorage.getItem('cemetClearanceRequests')) || [];
 
-    // Combine and group requests by matricNumber
-    const combinedRequests = [...bursaryRequests, ...libraryRequests];
+    const combinedRequests = [
+      ...bursaryRequests,
+      ...libraryRequests,
+      ...sportsRequests,
+      ...departmentRequests,
+      ...cemetRequests,
+    ];
+
     const grouped = combinedRequests.reduce((acc, request) => {
       const existing = acc.find(
         (item) => item.matricNumber === request.matricNumber
@@ -24,7 +35,10 @@ const Request = () => {
       if (existing) {
         existing.clearances.push({
           clearanceType: request.clearanceType,
-          receiptNumbers: request.receiptNumbers || {},
+          receiptNumbers:
+            request.clearanceType === 'Bursary' ? request.receiptNumbers : null,
+          receiptNumber:
+            request.clearanceType !== 'Bursary' ? request.receiptNumber : null,
           status: request.status,
         });
       } else {
@@ -36,7 +50,14 @@ const Request = () => {
           clearances: [
             {
               clearanceType: request.clearanceType,
-              receiptNumbers: request.receiptNumbers || {},
+              receiptNumbers:
+                request.clearanceType === 'Bursary'
+                  ? request.receiptNumbers
+                  : null,
+              receiptNumber:
+                request.clearanceType !== 'Bursary'
+                  ? request.receiptNumber
+                  : null,
               status: request.status,
             },
           ],
@@ -48,14 +69,12 @@ const Request = () => {
     setGroupedRequests(grouped);
   }, []);
 
-  // Handle Accept Action
   const handleAccept = (matricNumber, clearanceType) => {
     const updatedRequests = groupedRequests.map((student) => {
       if (student.matricNumber === matricNumber) {
         student.clearances = student.clearances.map((clearance) => {
-          if (clearance.clearanceType === clearanceType) {
+          if (clearance.clearanceType === clearanceType)
             clearance.status = 'Accepted';
-          }
           return clearance;
         });
       }
@@ -66,14 +85,12 @@ const Request = () => {
     updateLocalStorage(updatedRequests);
   };
 
-  // Handle Deny Action
   const handleDeny = (matricNumber, clearanceType) => {
     const updatedRequests = groupedRequests.map((student) => {
       if (student.matricNumber === matricNumber) {
         student.clearances = student.clearances.map((clearance) => {
-          if (clearance.clearanceType === clearanceType) {
+          if (clearance.clearanceType === clearanceType)
             clearance.status = 'Denied';
-          }
           return clearance;
         });
       }
@@ -84,39 +101,47 @@ const Request = () => {
     updateLocalStorage(updatedRequests);
   };
 
-  // Update localStorage for bursary and library
   const updateLocalStorage = (updatedRequests) => {
-    const bursaryRequests = [];
-    const libraryRequests = [];
+    const clearanceTypes = [
+      'Bursary',
+      'Library',
+      'Sports',
+      'Department',
+      'CEMET',
+    ];
+    const updatedData = {};
+
+    clearanceTypes.forEach((type) => {
+      updatedData[type] = [];
+    });
 
     updatedRequests.forEach((student) => {
       student.clearances.forEach((clearance) => {
-        const baseData = {
+        const clearanceData = {
           matricNumber: student.matricNumber,
           name: student.name,
           faculty: student.faculty,
           department: student.department,
           clearanceType: clearance.clearanceType,
-          receiptNumbers: clearance.receiptNumbers,
           status: clearance.status,
         };
 
         if (clearance.clearanceType === 'Bursary') {
-          bursaryRequests.push(baseData);
-        } else if (clearance.clearanceType === 'Library') {
-          libraryRequests.push(baseData);
+          clearanceData.receiptNumbers = clearance.receiptNumbers;
+        } else {
+          clearanceData.receiptNumber = clearance.receiptNumber;
         }
+
+        updatedData[clearance.clearanceType].push(clearanceData);
       });
     });
 
-    localStorage.setItem(
-      'bursaryClearanceRequests',
-      JSON.stringify(bursaryRequests)
-    );
-    localStorage.setItem(
-      'libraryClearanceRequests',
-      JSON.stringify(libraryRequests)
-    );
+    clearanceTypes.forEach((type) => {
+      localStorage.setItem(
+        `${type.toLowerCase()}ClearanceRequests`,
+        JSON.stringify(updatedData[type])
+      );
+    });
   };
 
   return (
@@ -126,7 +151,11 @@ const Request = () => {
 
         {groupedRequests.length > 0 ? (
           groupedRequests.map((student, index) => (
-            <div className='search-welcome' key={index}>
+            <div
+              style={{ flexDirection: 'column' }}
+              className='search-welcome'
+              key={index}
+            >
               <div className='welcome-info'>
                 <p className='student-name'>{student.name}</p>
                 <p className='student-level'>{student.matricNumber}</p>
@@ -134,7 +163,7 @@ const Request = () => {
                 <p className='student-faculty'>{student.faculty}</p>
               </div>
 
-              <div className='clearance-list'>
+              <div style={{ width: '70%' }} className='clearance-list'>
                 {student.clearances.map((clearance, idx) => (
                   <div className='clearance-card' key={idx}>
                     <div className='clearance-header'>
@@ -146,23 +175,30 @@ const Request = () => {
                       </span>
                     </div>
 
-                    {/* Display receipt numbers for Bursary and Library */}
-                    {clearance.receiptNumbers &&
-                      Object.keys(clearance.receiptNumbers).length > 0 && (
-                        <div className='receipt-info'>
-                          <strong>Receipt Numbers:</strong>
-                          <ul>
-                            {Object.entries(clearance.receiptNumbers).map(
-                              ([level, receipt], idx) => (
-                                <li key={idx}>
-                                  <strong>{level.toUpperCase()}:</strong>{' '}
-                                  {receipt}
-                                </li>
-                              )
-                            )}
-                          </ul>
-                        </div>
+                    <div className='receipt-info'>
+                      <strong>
+                        Receipt{' '}
+                        {clearance.clearanceType === 'Bursary'
+                          ? 'Numbers'
+                          : 'Number'}
+                        :
+                      </strong>
+                      {clearance.clearanceType === 'Bursary' &&
+                      clearance.receiptNumbers ? (
+                        <ul>
+                          {Object.entries(clearance.receiptNumbers).map(
+                            ([level, receipt], idx) => (
+                              <li style={{ listStyle: 'none' }} key={idx}>
+                                <strong>{level.toUpperCase()}:</strong>{' '}
+                                {receipt}
+                              </li>
+                            )
+                          )}
+                        </ul>
+                      ) : (
+                        <p>{clearance.receiptNumber}</p>
                       )}
+                    </div>
 
                     <div className='clearance-actions'>
                       <button

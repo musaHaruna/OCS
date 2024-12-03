@@ -41,14 +41,6 @@ const AdSidebar = ({ state }) => {
             <AdStudentIcon />
             Students
           </Link>
-
-          <Link
-            to='/admin/settings'
-            className={`${state === 4 ? 'side-flex active' : 'side-flex'}`}
-          >
-            <SettingsIcon />
-            Settings
-          </Link>
         </div>
 
         <button className='logout' onClick={() => navigate('/')}>

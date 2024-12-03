@@ -25,7 +25,6 @@ const App = () => {
         <Route path='/admin/dashboard' element={<AdDashboard />} />
         <Route path='/admin/request' element={<Request />} />
         <Route path='/admin/students' element={<AdStudent />} />
-        <Route path='/admin/settings' element={<AdSettings />} />
 
         {/* 
         <Route path="/admin/students/new" element={<NewStud />} />
